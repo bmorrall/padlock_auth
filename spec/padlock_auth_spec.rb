@@ -13,6 +13,53 @@ RSpec.describe PadlockAuth do
     end
   end
 
+  describe ".configure" do
+    it "can be configured with a token strategy" do
+      PadlockAuth.configure do
+        secure_with :token do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(PadlockAuth.config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(PadlockAuth.config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured with a token (String) strategy" do
+      PadlockAuth.configure do
+        secure_with "token" do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(PadlockAuth.config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(PadlockAuth.config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured with a PadlockAuth::Token::Strategy" do
+      PadlockAuth.configure do
+        secure_with PadlockAuth::Token::Strategy do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(PadlockAuth.config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(PadlockAuth.config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured with a PadlockAuth::Token::Strategy instance" do
+      PadlockAuth.configure do
+        strategy = PadlockAuth::Token::Strategy.build do
+          secret_key "my$ecretK3y"
+        end
+        secure_with strategy
+      end
+
+      expect(PadlockAuth.config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(PadlockAuth.config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+  end
+
   context "when configured with a strategy" do
     let(:strategy) { instance_double(PadlockAuth::AbstractStrategy) }
 

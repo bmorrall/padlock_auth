@@ -15,6 +15,12 @@ module PadlockAuth
   # Configuration classes
   autoload :Config, "padlock_auth/config"
 
+  # Token stategy classes
+  module Token
+    autoload :AccessToken, "padlock_auth/token/access_token"
+    autoload :Strategy, "padlock_auth/token/strategy"
+  end
+
   # Mixins for extending classes
   module Mixins
     autoload :BuildWith, "padlock_auth/mixins/build_with"

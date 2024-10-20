@@ -6,6 +6,10 @@ module PadlockAuth
   #
   # @example
   #   PadlockAuth.configure do |config|
+  #     config.secure_with :token do
+  #       secret_key "my_secret_key"
+  #     end
+  #
   #     config.default_scopes :read, :write
   #     config.access_token_methods :from_bearer_authorization, :from_access_token_param
   #     config.raise_on_errors!
@@ -22,13 +26,21 @@ module PadlockAuth
       # Configure the strategy to use for authentication.
       #
       # Strategies are responsible for building access tokens and authenticating them.
+      # PadlockAuth comes with a default strategy, `PadlockAuth::Token::Strategy`,
+      # which uses a shared secret key to build and authenticate access tokens.
       #
       # A strategy can be provided as:
-      # - an subclass instance of `PadlockAuth::AbstractStrategy`, or one matching its interface,
-      # - a Class that responds to `.build` and returns an instance of `PadlockAuth::AbstractStrategy`
+      # - an instance of `PadlockAuth::AbstractStrategy`, or one matching its interface,
+      # - a class that responds to `.build` and returns an instance of `PadlockAuth::AbstractStrategy`, or
+      # - a string or symbol representing a built-in strategy (e.g. `:token`)
+      #
+      # The string or symbol strategy will be resolved to a class in the `PadlockAuth` namespace
+      # by appending `::Strategy` to the string and looking up the constant in the `PadlockAuth`
+      # namespace. For example, `:token` will resolve to `PadlockAuth::Token::Strategy`.
       #
       # You can define your own strategy by subclassing `PadlockAuth::AbstractStrategy`,
-      # and passing an instance to this method.
+      # and passing an instance of your strategy to `secure_with`, or by using the naming convention
+      # and passing a string or symbol.
       #
       # @param strategy [PadlockAuth::AbstractStrategy, Class, String, Symbol] The strategy to use for authentication
       #
@@ -37,6 +49,10 @@ module PadlockAuth
       # @return [PadlockAuth::AbstractStrategy] The strategy instance
       def secure_with(strategy, &)
         strategy = case strategy
+        when String, Symbol
+          strategy_klass = "PadlockAuth::#{strategy.to_s.camelize}::Strategy".safe_constantize
+          raise ArgumentError, "unknown strategy: #{strategy}" unless strategy_klass
+          strategy_klass.build(&)
         when Class
           strategy.build(&)
         else

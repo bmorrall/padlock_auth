@@ -9,10 +9,65 @@ RSpec.describe PadlockAuth::Config do
       expect(config.strategy).to be configured_strategy
     end
 
-    it "raises an error if a class does not provide a build method" do
+    it "can be configured with a token strategy" do
+      config = described_class.build do
+        secure_with :token do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured with a token (String) strategy" do
+      config = described_class.build do
+        secure_with "token" do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured with a PadlockAuth::Token::Strategy class" do
+      config = described_class.build do
+        secure_with PadlockAuth::Token::Strategy do
+          secret_key "my$ecretK3y"
+        end
+      end
+
+      expect(config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "can be configured an instance of PadlockAuth::Token::Strategy" do
+      config = described_class.build do
+        strategy = PadlockAuth::Token::Strategy.build do
+          secret_key "my$ecretK3y"
+        end
+        secure_with strategy
+      end
+
+      expect(config.strategy).to be_instance_of(PadlockAuth::Token::Strategy)
+      expect(config.strategy.secret_key).to eq("my$ecretK3y")
+    end
+
+    it "raises an error for an unknown strategy" do
       expect do
         described_class.build do
-          secure_with String
+          secure_with :unknown
+        end
+      end.to raise_error(ArgumentError, "unknown strategy: unknown")
+    end
+
+    it "raises an error if the strategy does not provide a build method" do
+      expect do
+        described_class.build do
+          secure_with String do
+            secret_key "my$ecretK3y"
+          end
         end
       end.to raise_error(NoMethodError, "undefined method `build' for class String")
     end
@@ -65,10 +120,17 @@ RSpec.describe PadlockAuth::Config do
         secure_with strategy
       end
       expect(config.default_scopes).to be_a(PadlockAuth::Config::Scopes)
+    end
+
+    it "returns an empty collection by default" do
+      strategy = instance_double(PadlockAuth::AbstractStrategy)
+      config = described_class.build do
+        secure_with strategy
+      end
       expect(config.default_scopes).to be_empty
     end
 
-    it "can be configured with symbols as arguments" do
+    it "can be configured with default scopes" do
       strategy = instance_double(PadlockAuth::AbstractStrategy)
       config = described_class.build do
         secure_with strategy
