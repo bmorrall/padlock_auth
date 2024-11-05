@@ -1,0 +1,14 @@
+en:
+  padlock_auth:
+    errors:
+      messages:
+        server_error: "An error occurred while processing your request."
+
+        invalid_token:
+          revoked: "The access token was revoked."
+          expired: "The access token has expired."
+          unknown: "The access token is invalid."
+
+        forbidden_token:
+          missing_scope: 'Access to this resource requires scope "%{oauth_scopes}".'
+          unknown: "The access token is forbidden."
