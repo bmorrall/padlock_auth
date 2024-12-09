@@ -5,7 +5,7 @@ require "padlock_auth/railtie"
 require "padlock_auth/errors"
 
 # PadlockAuth allows you to secure your Rails application using access tokens
-# provided by a third-party provider.
+# provided by an external provider.
 #
 module PadlockAuth
   # Abstract classes recommended for extension

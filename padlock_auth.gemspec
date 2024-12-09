@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Ben Morrall"]
   spec.email = ["bemo56@hotmail.com"]
   spec.homepage = "http://github.com/bmorrall/padlock_auth"
-  spec.summary = "Secure your Rails application using access tokens provided by a third-party provider."
-  spec.description = "PadlockAuth allows you to secure your Rails application using access tokens provided by a third-party provider."
+  spec.summary = "Secure your Rails application using access tokens provided by an external provider."
+  spec.description = "PadlockAuth allows you to secure your Rails application using access tokens provided by an external provider."
   spec.license = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
