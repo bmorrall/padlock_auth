@@ -69,7 +69,7 @@ RSpec.describe PadlockAuth::Config do
             secret_key "my$ecretK3y"
           end
         end
-      end.to raise_error(NoMethodError, "undefined method `build' for class String")
+      end.to raise_error(NoMethodError, /undefined method `build'/)
     end
   end
 

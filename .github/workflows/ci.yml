@@ -8,6 +8,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      RAILS_VERSION: 7.2
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,6 +25,16 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby:
+           - 3.2.6
+           - 3.3.4
+        rails:
+            - '7.2'
+            - '8.0'
+    env:
+      RAILS_VERSION: ${{ matrix.rails }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,7 +42,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.3.4
+          ruby-version: ruby-${{ matrix.ruby }}
           bundler-cache: true
 
       - name: Install dependencies
