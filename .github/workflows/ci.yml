@@ -21,5 +21,20 @@ jobs:
       - name: Lint code for consistent style
         run: bin/standardrb
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.4
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+
       - name: Run tests
-        run: bin/rails test
+        run: bundle exec rspec
