@@ -20,3 +20,6 @@ jobs:
 
       - name: Lint code for consistent style
         run: bin/standardrb
+
+      - name: Run tests
+        run: bin/rails test
