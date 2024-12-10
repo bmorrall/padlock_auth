@@ -16,10 +16,14 @@ module PadlockAuth
       #
       # @param scopes [Array<String>] Scopes required for the request, defaults to the default scopes.
       #
-      def padlock_authorize!(*scopes)
+      def padlock_authorize!(...)
+        padlock_render_error unless padlock_authorized?(...)
+      end
+
+      def padlock_authorized?(*scopes)
         @_padlock_auth_scopes = scopes.presence || PadlockAuth.config.default_scopes
 
-        padlock_render_error unless valid_padlock_auth_token?
+        valid_padlock_auth_token?
       end
 
       # Default render options for unauthorized requests.

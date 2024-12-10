@@ -239,6 +239,94 @@ puts response.body
 
 PadlockAuth will extract the username and password using the `from_basic_authorization` method and use them to generate an access token.
 
+### Securing an Action Cable Connection
+
+You can use PadlockAuth to secure your Action Cable connections by verifying an access token during the connection process. The access token can be provided via the `"access_token"` or `"bearer_token"` parameters.
+
+Not all access tokens provide a `subject` method, it is entirely dependent on the implementation.
+
+Here’s an example implementation:
+
+```ruby
+module ApplicationCable
+  class Connection < ActionCable::Connection::Base
+    identified_by :access_token_subject
+
+    def connect
+      self.access_token_subject = find_verified_subject
+    end
+
+    private
+
+    def find_verified_subject
+      if padlock_authorized? "websocket"
+        padlock_auth_token.subject
+      else
+        reject_unauthorized_connection
+      end
+    end
+  end
+end
+```
+
+#### Explanation
+
+- `padlock_authorized?`: Checks if the access token is valid and optionally verifies the required scope (`"websocket"` in this example).
+- `padlock_auth_token`: Provides access to the verified token, allowing you to retrieve attributes such as `subject`.
+
+This ensures that only clients with valid access tokens can establish a WebSocket connection. The access token `sub` can then be used to identify the connected client throughout the session.
+
+#### Example: Connecting to the Action Cable Connection via JS
+
+```js
+import { createConsumer } from "@rails/actioncable"
+
+// Use a function to dynamically generate the URL
+createConsumer(getWebSocketURL)
+
+function getWebSocketURL() {
+  const token = localStorage.get('access-token')
+  return `wss://example.com/cable?token=${token}`
+}
+```
+
+### Securing an ActionCable Channel
+
+PadlockAuth can secure individual Action Cable channels by verifying an access token when a client subscribes. The access token can be provided via the `"access_token"` or `"bearer_token"` parameters.
+
+Here’s an example implementation:
+
+```ruby
+class AuthorizedChannel < ApplicationCable::Channel
+  def subscribed
+    if padlock_authorized? "channel"
+      stream_from "authorized_stream"
+    else
+      reject
+    end
+  end
+
+  def unsubscribed
+    # Any cleanup needed when channel is unsubscribed
+  end
+end
+```
+
+#### Explanation
+
+- `padlock_authorized?`: Validates the access token and ensures it includes the required scope (`"channel"` in this example).
+
+By leveraging these features, PadlockAuth ensures only authenticated users with the proper access scope can subscribe and receive messages on the channel.
+
+#### Example: Connecting to the Action Cable Channel via JS
+
+```js
+import consumer from "./consumer"
+
+const token = localStorage.get('access-token')
+consumer.subscriptions.create({ channel: "AuthorizedChannel", access_token: token })
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:

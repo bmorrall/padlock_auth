@@ -40,7 +40,7 @@ module PadlockAuth
 
   # Rails-specific classes
   module Rails
-    autoload :ConnectionHelpers, "padlock_auth/rails/connection_helpers"
+    autoload :ActionCableChannelHelpers, "padlock_auth/rails/action_cable_channel_helpers"
     autoload :Helpers, "padlock_auth/rails/helpers"
     autoload :TokenFactory, "padlock_auth/rails/token_factory"
   end

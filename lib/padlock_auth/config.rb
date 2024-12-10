@@ -94,6 +94,10 @@ module PadlockAuth
         config.instance_variable_set(:@access_token_methods, methods.flatten.compact)
       end
 
+      def action_cable_methods(*methods)
+        config.instance_variable_set(:@action_cable_methods, methods.flatten.compact)
+      end
+
       # Calls to `padlock_authorize!` will raise an exception when authentication fails.
       #
       def raise_on_errors!
@@ -162,6 +166,13 @@ module PadlockAuth
     def access_token_methods
       @access_token_methods ||= %i[
         from_bearer_authorization
+        from_access_token_param
+        from_bearer_param
+      ]
+    end
+
+    def action_cable_methods
+      @action_cable_methods ||= %i[
         from_access_token_param
         from_bearer_param
       ]

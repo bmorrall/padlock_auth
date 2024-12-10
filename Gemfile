@@ -9,5 +9,7 @@ gem "sqlite3"
 
 gem "rails", "~> #{ENV.fetch("RAILS_VERSION")}.0"
 
+gem "redis" # required for ActionCable
+
 # Start debugger with binding.b [https://github.com/ruby/debug]
 # gem "debug", ">= 1.0.0"
