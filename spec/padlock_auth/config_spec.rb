@@ -220,6 +220,28 @@ RSpec.describe PadlockAuth::Config do
     end
   end
 
+  describe "#action_cable_methods" do
+    it "has default action cable methods" do
+      strategy = instance_double(PadlockAuth::AbstractStrategy)
+      config = described_class.build do
+        secure_with strategy
+      end
+      expect(config.action_cable_methods).to contain_exactly(
+        :from_access_token_param,
+        :from_bearer_param
+      )
+    end
+
+    it "can be configured with a single action cable method" do
+      strategy = instance_double(PadlockAuth::AbstractStrategy)
+      config = described_class.build do
+        secure_with strategy
+        action_cable_methods :from_bearer_param
+      end
+      expect(config.action_cable_methods).to contain_exactly(:from_bearer_param)
+    end
+  end
+
   describe "#handle_auth_errors" do
     it "has a default error handling strategy" do
       strategy = instance_double(PadlockAuth::AbstractStrategy)

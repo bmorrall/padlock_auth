@@ -11,6 +11,10 @@ module PadlockAuth
       ActiveSupport.on_load(:action_controller) do
         include PadlockAuth::Rails::Helpers
       end
+      ActiveSupport.on_load(:action_cable) do
+        ActionCable::Connection::Base.include PadlockAuth::Rails::Helpers
+        ActionCable::Channel::Base.include PadlockAuth::Rails::ActionCableChannelHelpers
+      end
     end
 
     initializer "padlock_auth.i18n" do
